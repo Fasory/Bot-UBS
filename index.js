@@ -12,6 +12,35 @@ var rolePannelStack = [];
 
 bot.on('ready', function() {
   bot.user.setActivity('L2 MIS', {type : 'COMPETING'});
+  // Spécifique au serveur L2 MIS - permet de retrouver le message en cas de restart
+  for (var [id_guild, guild] of bot.guilds.cache) {
+    channelFiliere = guild.channels.cache.find(channel => channel.name === 'filières-mis');
+    if (channelFiliere !== undefined && channelFiliere.lastMessage.author.bot){
+      const msg = channelFiliere.lastMessage;
+      var argsKey = new Map();
+      var args = [];
+      for (var line of msg.split('\n')){
+        if (line.includes("  -  ")) {
+          args.push(line.substr(6));
+        }
+      }
+      var allRoles = [];
+      for (var [id_roleREF, roleREF] of  msg.guild.roles.cache) {allRoles.push(roleREF);}
+      for (var i = 0; i < args.length; i++) {
+        for (var j = 0; j < allRoles.length; j++) {
+          if (args[i] === allRoles[j].name) {
+            args[i] = allRoles[j];
+            break;
+          }
+        }
+      }
+      for (var i = 0; i < args.length; i++) {
+        msg.react(this.reactREF[i]);
+        argsKey.set(this.reactREF[i], args[i]);
+      }
+      rolePannelStack.push([msg.id, argsKey]);
+    }
+  }
 })
 
 
