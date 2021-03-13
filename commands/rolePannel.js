@@ -6,7 +6,11 @@ module.exports = class RolePannel extends Command {
 
   static tryExecute(msg, rolePannelStack) {
     if (this.checker(msg)) {
-      this.effect(msg, rolePannelStack);
+      if (msg.member.permissions.has(0x00000008)) {
+        this.effect(msg, rolePannelStack);
+      } else {
+        this.noPermission(msg);
+      }
       return true;
     }
     return false;
@@ -60,6 +64,10 @@ module.exports = class RolePannel extends Command {
     else if (args.length === 1) {msg.channel.send('**Erreur Arguments -** *Le rôle '+args[0]+' n\'existe pas.*');}
     else if (args.length > 26) {msg.channel.send('**Erreur Arguments -** *Désolé mais tu ne peux passer au maximum 26 rôles en paramètre.*');}
     else {msg.channel.send('**Erreur Arguments -** *Les rôles '+args.join(", ")+' n\'existent pas.*');}
+  }
+
+  static noPermission(msg) {
+    msg.channel.send('**Erreur Permission -** *Tu as besoin de la permission d\'administrateur pour faire cela.*');
   }
 
   static react(msg, args, rolePannelStack) {
