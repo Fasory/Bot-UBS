@@ -41,7 +41,6 @@ bot.on('ready', async function() {
             argsKey.set(RolePannel.reactREF[i], args[i]);
           }
           rolePannelStack.push([msg.id, argsKey]);
-          console.log(rolePannelStack);
         }
       }})
     }
