@@ -41,6 +41,7 @@ bot.on('ready', function() {
       rolePannelStack.push([msg.id, argsKey]);
     }
   }
+  console.log(rolePannelStack);
 })
 
 
