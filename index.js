@@ -10,39 +10,42 @@ const Pong = require('./commands/pong');
 const RolePannel = require('./commands/rolePannel');
 var rolePannelStack = [];
 
-bot.on('ready', function() {
+bot.on('ready', async function() {
   bot.user.setActivity('L2 MIS', {type : 'COMPETING'});
   // Spécifique au serveur L2 MIS - permet de retrouver le message en cas de restart
   for (var [id_guild, guild] of bot.guilds.cache) {
     channelFiliere = guild.channels.cache.find(channel => channel.name === 'filières-mis');
-    console.log(channelFiliere);
-    if (channelFiliere !== undefined && channelFiliere.lastMessage !== null && channelFiliere.lastMessage.author.bot){
-      const msg = channelFiliere.lastMessage;
-      var argsKey = new Map();
-      var args = [];
-      for (var line of msg.split('\n')){
-        if (line.includes("  -  ")) {
-          args.push(line.substr(6));
-        }
-      }
-      var allRoles = [];
-      for (var [id_roleREF, roleREF] of  msg.guild.roles.cache) {allRoles.push(roleREF);}
-      for (var i = 0; i < args.length; i++) {
-        for (var j = 0; j < allRoles.length; j++) {
-          if (args[i] === allRoles[j].name) {
-            args[i] = allRoles[j];
-            break;
+    if (channelFiliere !== undefined) {
+      var msg = undefined
+      channelFiliere.messages.fetch({limit: 1}).then(message => {for (let [id, m] of message) {
+        msg = m;
+        if (msg !== undefined) {
+          var argsKey = new Map();
+          var args = [];
+          for (var line of msg.content.split('\n').join('*').split('*')){
+            if (line.includes("  -  ")) {
+              args.push(line.substr(7));
+            }
           }
+          var allRoles = [];
+          for (var [id_roleREF, roleREF] of  msg.guild.roles.cache) {allRoles.push(roleREF);}
+          for (var i = 0; i < args.length; i++) {
+            for (var j = 0; j < allRoles.length; j++) {
+              if (args[i] === allRoles[j].name) {
+                args[i] = allRoles[j];
+                break;
+              }
+            }
+          }
+          for (var i = 0; i < args.length; i++) {
+            argsKey.set(RolePannel.reactREF[i], args[i]);
+          }
+          rolePannelStack.push([msg.id, argsKey]);
+          console.log(rolePannelStack);
         }
-      }
-      for (var i = 0; i < args.length; i++) {
-        msg.react(this.reactREF[i]);
-        argsKey.set(this.reactREF[i], args[i]);
-      }
-      rolePannelStack.push([msg.id, argsKey]);
+      }})
     }
   }
-  console.log(rolePannelStack);
 })
 
 
