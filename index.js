@@ -15,7 +15,8 @@ bot.on('ready', function() {
   // Spécifique au serveur L2 MIS - permet de retrouver le message en cas de restart
   for (var [id_guild, guild] of bot.guilds.cache) {
     channelFiliere = guild.channels.cache.find(channel => channel.name === 'filières-mis');
-    if (channelFiliere !== undefined && channelFiliere.lastMessage.author.bot){
+    console.log(channelFiliere);
+    if (channelFiliere !== undefined && channelFiliere.lastMessage !== null && channelFiliere.lastMessage.author.bot){
       const msg = channelFiliere.lastMessage;
       var argsKey = new Map();
       var args = [];
